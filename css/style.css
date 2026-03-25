@@ -1,0 +1,119 @@
+#video {
+    transform: scaleX(-1);
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.btn-main {
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+@media (min-width: 768px) {
+    .btn-main {
+        padding: 1rem;
+    }
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+}
+
+.btn-action {
+    background: #4b5563;
+    color: white;
+    padding: 0.6rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .btn-action {
+        font-size: 0.875rem;
+    }
+}
+
+.btn-action:hover {
+    background: #374151;
+}
+
+.frame-thumb {
+    width: 80px;
+    height: 160px;
+    flex-shrink: 0;
+    object-fit: cover;
+    background: #18181b;
+    border: 2px solid #3f3f46;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+@media (min-width: 768px) {
+    .frame-thumb {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1/2;
+    }
+}
+
+.frame-thumb:hover {
+    border-color: #3b82f6;
+}
+
+.sticker-thumb {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    padding: 4px;
+    background: #18181b;
+    border: 2px solid #3f3f46;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.sticker-thumb:hover {
+    border-color: #3b82f6;
+}
+
+/* Scrollbar styling */
+aside::-webkit-scrollbar, 
+#frames::-webkit-scrollbar, 
+#stickers::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+}
+aside::-webkit-scrollbar-thumb, 
+#frames::-webkit-scrollbar-thumb, 
+#stickers::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+    border-radius: 10px;
+}
+
+/* Fix for mobile Safari height */
+.h-screen {
+    height: 100vh;
+    height: -webkit-fill-available;
+}

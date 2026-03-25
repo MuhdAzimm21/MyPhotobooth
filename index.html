@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Modern Photobooth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-zinc-900 text-white overflow-x-hidden md:overflow-hidden min-h-screen md:h-screen w-screen">
+
+    <div class="flex flex-col md:flex-row h-full w-full">
+        
+        <!-- Sidebar / Bottom Drawer on Mobile -->
+        <aside class="w-full md:w-80 bg-zinc-800 border-b md:border-b-0 md:border-r border-zinc-700 flex flex-col h-auto md:h-full overflow-y-auto p-4 gap-6 z-10">
+            <h1 class="text-xl font-bold tracking-tight text-center border-b border-zinc-700 pb-4 hidden md:block">PHOTOBOOTH</h1>
+            
+            <div class="flex flex-col gap-6">
+                <!-- Templates -->
+                <section>
+                    <h2 class="text-xs font-semibold text-zinc-400 uppercase mb-3">1. Templates</h2>
+                    <div id="frames" class="flex md:grid md:grid-cols-2 gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
+                        <!-- Content loaded by JS -->
+                    </div>
+                </section>
+
+                <!-- Stickers -->
+                <section>
+                    <h2 class="text-xs font-semibold text-zinc-400 uppercase mb-3">2. Stickers</h2>
+                    <div id="stickers" class="flex flex-row md:flex-wrap gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
+                        <!-- Content loaded by JS -->
+                    </div>
+                </section>
+
+                <!-- Text & Caption -->
+                <section class="flex flex-col gap-2">
+                    <h2 class="text-xs font-semibold text-zinc-400 uppercase mb-1">3. Caption</h2>
+                    <div class="flex gap-2">
+                        <input id="textInput" placeholder="Add caption..." class="flex-1 bg-zinc-900 border border-zinc-700 p-2 rounded text-sm focus:outline-none focus:border-blue-500">
+                        <select id="fontSelect" class="bg-zinc-900 border border-zinc-700 p-2 rounded text-sm w-24">
+                            <option>Arial</option>
+                            <option>Courier</option>
+                            <option>Comic Sans MS</option>
+                        </select>
+                    </div>
+                    <button onclick="addText()" class="btn-primary w-full mt-1">Add Text</button>
+                </section>
+
+                <!-- Actions -->
+                <section class="mt-auto pt-4 border-t border-zinc-700 grid grid-cols-2 md:flex md:flex-col gap-2">
+                    <button onclick="downloadPhoto()" class="btn-action">Download PNG</button>
+                    <button onclick="createGIF()" class="btn-action">Export GIF</button>
+                    <button onclick="shareWhatsApp()" class="btn-action bg-green-600 hover:bg-green-700 col-span-2">Share to WA</button>
+                </section>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="flex-1 relative flex flex-col lg:flex-row items-center justify-center p-4 md:p-8 gap-4 md:gap-8 overflow-y-auto md:overflow-visible">
+            
+            <!-- Camera View -->
+            <div class="flex flex-col items-center gap-4 w-full lg:w-1/2 max-w-xl">
+                <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl border-2 md:border-4 border-zinc-800">
+                    <video id="video" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <div id="countdown" class="absolute inset-0 flex items-center justify-center text-6xl md:text-8xl font-black text-white pointer-events-none drop-shadow-lg"></div>
+                </div>
+                <div class="flex gap-2 md:gap-4 w-full">
+                    <button onclick="startCamera()" class="btn-main flex-1 bg-zinc-700 hover:bg-zinc-600 text-sm md:text-base">Start Camera</button>
+                    <button onclick="startCapture()" class="btn-main flex-1 bg-red-600 hover:bg-red-500 text-sm md:text-base">Take Photos</button>
+                </div>
+            </div>
+
+            <!-- Canvas Preview -->
+            <div class="w-full lg:w-1/2 flex items-center justify-center py-2 md:py-4 h-[60vh] lg:h-full">
+                <div class="h-full aspect-[1/2] relative bg-white rounded shadow-2xl border-2 md:border-4 border-zinc-800">
+                    <canvas id="canvas" class="h-full w-full object-contain"></canvas>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/editor.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/sticker.js"></script>
+    <script src="js/gif.js"></script>
+
+</body>
+</html>
