@@ -1,0 +1,22 @@
+{
+  "name": "Modern Photobooth",
+  "short_name": "Photobooth",
+  "description": "A modern web-based photobooth with stickers and GIF support.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#18181b",
+  "theme_color": "#18181b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "assets/stickers/sticker1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/stickers/sticker1.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
