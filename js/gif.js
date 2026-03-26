@@ -87,8 +87,15 @@ async function createGIF() {
 
         // Add one final long-duration frame of the finished strip
         // Use the main canvas which has the high-res captured photos
+        const tempSelection = typeof selectedElement !== 'undefined' ? selectedElement : null;
+        if (typeof selectedElement !== 'undefined') selectedElement = null;
+        
         renderStrip();
         gif.addFrame(canvas, { delay: 2500, copy: true });
+        
+        // Restore selection
+        if (typeof selectedElement !== 'undefined') selectedElement = tempSelection;
+        renderStrip();
 
         gif.on("finished", function(blob) {
             const url = URL.createObjectURL(blob);

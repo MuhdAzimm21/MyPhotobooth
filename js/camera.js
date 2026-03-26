@@ -160,23 +160,27 @@ function renderLivePreviewToStrip() {
 }
 
 function captureFrame() {
+    const nextHoleIdx = photos.length;
+    const h = currentHoles[nextHoleIdx] || {w: 640, h: 480};
+    const targetRatio = h.w / h.h;
+    
     let temp = document.createElement("canvas");
     const vw = video.videoWidth;
     const vh = video.videoHeight;
-    const cw = video.clientWidth;
-    const ch = video.clientHeight;
     const videoRatio = vw / vh;
-    const containerRatio = cw / ch;
+    
     let sx, sy, sw, sh;
-    if (videoRatio > containerRatio) {
-        sw = vh * containerRatio; sh = vh;
+    if (videoRatio > targetRatio) {
+        sw = vh * targetRatio; sh = vh;
         sx = (vw - sw) / 2; sy = 0;
     } else {
-        sw = vw; sh = vw / containerRatio;
+        sw = vw; sh = vw / targetRatio;
         sx = 0; sy = (vh - sh) / 2;
     }
+    
     temp.width = 1280;
-    temp.height = 1280 / containerRatio;
+    temp.height = 1280 / targetRatio;
+    
     let tCtx = temp.getContext("2d");
     if (currentFacingMode === "user") {
         tCtx.translate(temp.width, 0);
