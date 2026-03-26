@@ -1,5 +1,5 @@
 #video {
-    transform: scaleX(-1);
+    /* transform: scaleX(-1); Removed - now handled in camera.js */
 }
 
 canvas {
