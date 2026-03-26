@@ -76,3 +76,15 @@ function shareWhatsApp(){
         "https://wa.me/?text=" + encodeURIComponent("Check out my photostrip!")
     );
 }
+
+// Sidebar Toggle Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+    
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+        });
+    }
+});

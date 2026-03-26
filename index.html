@@ -46,55 +46,67 @@
         </main>
 
         <!-- Sidebar / Drawer -->
-        <aside class="w-full md:w-80 bg-zinc-800 border-t md:border-t-0 md:border-l border-zinc-700 flex flex-col h-auto md:h-full overflow-hidden p-4 gap-4 z-10 safe-area-bottom">
-            <h1 class="text-xl font-bold tracking-tight text-center border-b border-zinc-700 pb-3 hidden md:block">PHOTOBOOTH</h1>
+        <aside id="sidebar" class="w-full md:w-80 bg-zinc-800 border-t md:border-t-0 md:border-l border-zinc-700 flex flex-col h-auto md:h-full relative z-20 safe-area-bottom">
             
-            <div class="flex flex-col gap-4 overflow-y-auto pr-1">
-                <!-- Templates -->
-                <section>
-                    <h2 class="text-[10px] font-semibold text-zinc-400 uppercase mb-2">1. Templates</h2>
-                    <div id="frames" class="flex md:grid md:grid-cols-2 gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-hide">
-                        <!-- Content loaded by JS -->
-                    </div>
-                </section>
+            <!-- Toggle Button -->
+            <button id="sidebarToggle" class="absolute z-30 bg-zinc-800 border border-zinc-700 p-2 rounded-full shadow-lg hover:bg-zinc-700 transition-all duration-300
+                md:-left-10 md:top-1/2 md:-translate-y-1/2
+                left-1/2 -top-10 -translate-x-1/2 md:translate-x-0">
+                <svg id="toggleIcon" class="transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
 
-                <!-- Stickers -->
-                <section>
-                    <h2 class="text-[10px] font-semibold text-zinc-400 uppercase mb-2">2. Stickers</h2>
-                    <div id="stickers" class="flex flex-row md:flex-wrap gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-hide">
-                        <!-- Content loaded by JS -->
-                    </div>
-                </section>
+            <div id="sidebarContent" class="flex-1 flex flex-col gap-4 overflow-hidden p-4 h-full w-full">
+                <h1 class="text-xl font-bold tracking-tight text-center border-b border-zinc-700 pb-3 hidden md:block">PHOTOBOOTH</h1>
+                
+                <div class="flex flex-col gap-4 overflow-y-auto pr-1 scrollbar-hide">
+                    <!-- Templates -->
+                    <section>
+                        <h2 class="text-[10px] font-semibold text-zinc-400 uppercase mb-2">1. Templates</h2>
+                        <div id="frames" class="flex md:grid md:grid-cols-2 gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-hide">
+                            <!-- Content loaded by JS -->
+                        </div>
+                    </section>
 
-                <!-- Text & Caption -->
-                <section class="flex flex-col gap-2">
-                    <h2 class="text-[10px] font-semibold text-zinc-400 uppercase mb-1">3. Caption</h2>
-                    <div class="flex gap-2">
-                        <input id="textInput" placeholder="Add caption..." class="flex-1 bg-zinc-900 border border-zinc-700 p-2 rounded text-xs focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="fontSelect" class="bg-zinc-900 border border-zinc-700 p-2 rounded text-xs">
-                            <option>Arial</option>
-                            <option>Courier</option>
-                            <option>Comic Sans MS</option>
-                            <option>Impact</option>
-                        </select>
-                        <input type="color" id="textColor" value="#000000" class="w-full h-8 bg-zinc-900 border border-zinc-700 rounded cursor-pointer">
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-zinc-500">Size:</span>
-                        <input type="range" id="textSize" min="10" max="100" value="30" class="flex-1">
-                    </div>
-                    <button onclick="addText()" class="btn-primary w-full text-xs">Add Text</button>
-                    <button onclick="clearCanvas()" class="text-[10px] text-zinc-500 hover:text-white mt-1 underline">Clear Canvas</button>
-                </section>
+                    <!-- Stickers -->
+                    <section>
+                        <h2 class="text-[10px] font-semibold text-zinc-400 uppercase mb-2">2. Stickers</h2>
+                        <div id="stickers" class="flex flex-row md:flex-wrap gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0 scrollbar-hide">
+                            <!-- Content loaded by JS -->
+                        </div>
+                    </section>
 
-                <!-- Actions -->
-                <section class="mt-auto pt-4 border-t border-zinc-700 grid grid-cols-2 md:flex md:flex-col gap-2">
-                    <button onclick="downloadPhoto()" class="btn-action">Save PNG</button>
-                    <button onclick="createGIF()" class="btn-action">Save GIF</button>
-                    <button onclick="shareWhatsApp()" class="btn-action bg-green-600 hover:bg-green-700 col-span-2">WhatsApp</button>
-                </section>
+                    <!-- Text & Caption -->
+                    <section class="flex flex-col gap-2">
+                        <h2 class="text-[10px] font-semibold text-zinc-400 uppercase mb-1">3. Caption</h2>
+                        <div class="flex gap-2">
+                            <input id="textInput" placeholder="Add caption..." class="flex-1 bg-zinc-900 border border-zinc-700 p-2 rounded text-xs focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="fontSelect" class="bg-zinc-900 border border-zinc-700 p-2 rounded text-xs">
+                                <option>Arial</option>
+                                <option>Courier</option>
+                                <option>Comic Sans MS</option>
+                                <option>Impact</option>
+                            </select>
+                            <input type="color" id="textColor" value="#000000" class="w-full h-8 bg-zinc-900 border border-zinc-700 rounded cursor-pointer">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-zinc-500">Size:</span>
+                            <input type="range" id="textSize" min="10" max="100" value="30" class="flex-1">
+                        </div>
+                        <button onclick="addText()" class="btn-primary w-full text-xs">Add Text</button>
+                        <button onclick="clearCanvas()" class="text-[10px] text-zinc-500 hover:text-white mt-1 underline">Clear Canvas</button>
+                    </section>
+
+                    <!-- Actions -->
+                    <section class="mt-auto pt-4 border-t border-zinc-700 grid grid-cols-2 md:flex md:flex-col gap-2">
+                        <button onclick="downloadPhoto()" class="btn-action">Save PNG</button>
+                        <button onclick="createGIF()" class="btn-action">Save GIF</button>
+                        <button onclick="shareWhatsApp()" class="btn-action bg-green-600 hover:bg-green-700 col-span-2">WhatsApp</button>
+                    </section>
+                </div>
             </div>
         </aside>
 
