@@ -7,6 +7,9 @@ canvas.height=800;
 let photos=[];
 let frameImg=null;
 let currentHoles=[];
+let selectedElement = null;
+let isDragging = false;
+let startX, startY;
 
 function drawImageCover(ctx, img, x, y, w, h) {
     const imgRatio = img.width / img.height;
@@ -21,6 +24,97 @@ function drawImageCover(ctx, img, x, y, w, h) {
     }
     ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
+
+// Interactivity logic
+function getCanvasPoint(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY
+    };
+}
+
+canvas.addEventListener('mousedown', startInteraction);
+canvas.addEventListener('touchstart', startInteraction, {passive: false});
+
+function startInteraction(e) {
+    if (e.type === 'touchstart') e.preventDefault();
+    const pos = getCanvasPoint(e);
+    startX = pos.x;
+    startY = pos.y;
+    
+    // Check hit detection for stickers (top-down)
+    let hit = false;
+    for (let i = stickers.length - 1; i >= 0; i--) {
+        const s = stickers[i];
+        if (Math.abs(pos.x - s.x) < s.size/2 && Math.abs(pos.y - s.y) < s.size/2) {
+            selectedElement = s;
+            isDragging = true;
+            hit = true;
+            break;
+        }
+    }
+    
+    if (!hit) {
+        for (let i = texts.length - 1; i >= 0; i--) {
+            const t = texts[i];
+            const metrics = ctx.measureText(t.text);
+            if (Math.abs(pos.x - t.x) < metrics.width/2 + 20 && Math.abs(pos.y - t.y) < t.size) {
+                selectedElement = t;
+                isDragging = true;
+                hit = true;
+                break;
+            }
+        }
+    }
+    
+    if (!hit) selectedElement = null;
+    renderStrip();
+}
+
+window.addEventListener('mousemove', moveInteraction);
+window.addEventListener('touchmove', moveInteraction, {passive: false});
+
+function moveInteraction(e) {
+    if (!isDragging || !selectedElement) return;
+    if (e.type === 'touchmove') e.preventDefault();
+    
+    const pos = getCanvasPoint(e);
+    const dx = pos.x - startX;
+    const dy = pos.y - startY;
+    
+    selectedElement.x += dx;
+    selectedElement.y += dy;
+    
+    startX = pos.x;
+    startY = pos.y;
+    renderStrip();
+}
+
+window.addEventListener('mouseup', endInteraction);
+window.addEventListener('touchend', endInteraction);
+
+function endInteraction() {
+    isDragging = false;
+}
+
+// Extra: Keyboard shortcuts for rotate and resize
+window.addEventListener('keydown', (e) => {
+    if (!selectedElement) return;
+    if (e.key === '+') selectedElement.size = (selectedElement.size || 30) + 5;
+    if (e.key === '-') selectedElement.size = Math.max(10, (selectedElement.size || 30) - 5);
+    if (e.key === 'r') selectedElement.rotation = (selectedElement.rotation || 0) + 5;
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+        stickers = stickers.filter(s => s !== selectedElement);
+        texts = texts.filter(t => t !== selectedElement);
+        selectedElement = null;
+    }
+    renderStrip();
+});
 
 function detectHoles(img) {
     const tempCanvas = document.createElement("canvas");
@@ -81,11 +175,7 @@ function detectHoles(img) {
                         m02 += dy * dy;
                     }
                     
-                    // This finds the angle of the "Longest" part of the hole
                     let angleRad = 0.5 * Math.atan2(2 * m11, m20 - m02);
-                    
-                    // Correct for portrait vs landscape holes
-                    // Most photobooth holes are taller than they are wide
                     const cosA = Math.cos(angleRad), sinA = Math.sin(angleRad);
                     let uDist = 0, vDist = 0;
                     for (const p of points) {
@@ -94,16 +184,11 @@ function detectHoles(img) {
                         vDist += Math.abs(-dx * sinA + dy * cosA);
                     }
                     
-                    // If the hole is "wider" than it is "tall" in this rotation, 
-                    // we might need to flip it 90 degrees to align with standard portraits
                     if (uDist > vDist) {
                         angleRad += Math.PI / 2;
                     }
 
                     const angleDeg = angleRad * 180 / Math.PI;
-                    console.log(`Hole detected at (${Math.round(centerX)}, ${Math.round(centerY)}) with angle: ${Math.round(angleDeg)}deg`);
-
-                    // Recalculate size based on final angle
                     const finalCos = Math.cos(angleRad), finalSin = Math.sin(angleRad);
                     let maxU = -Infinity, minU = Infinity, maxV = -Infinity, minV = Infinity;
                     for (const p of points) {
@@ -154,12 +239,11 @@ function renderStrip() {
     if (typeof drawTexts === "function") drawTexts();
 }
 
-// Manual angle overrides for specific frames (in degrees)
-// You can use a single number for all holes, or an array for individual holes
+// Manual angle overrides
 const manualAngles = {
-    "assets/frames/frame1.png": [16, -30], // Hole 1 (top): -5deg, Hole 2 (bottom): 5deg
+    "assets/frames/frame1.png": [16, -30],
     "assets/frames/frame2.png": 0 ,
-    "assets/frames/frame3.png": [-5, 5, -5],       // All holes in this frame: 0deg
+    "assets/frames/frame3.png": [-5, 5, -5],
 };
 
 function selectFrame(src){
@@ -168,53 +252,35 @@ function selectFrame(src){
     frameImg.onload=()=>{
         try {
             currentHoles = detectHoles(frameImg);
-
-            // Apply manual angle overrides
             const override = manualAngles[src];
             if (override !== undefined) {
                 if (Array.isArray(override)) {
-                    // Apply different angles to each hole in order
                     currentHoles.forEach((h, i) => {
                         if (override[i] !== undefined) h.angle = override[i];
                     });
                 } else {
-                    // Apply one single angle to all holes
                     currentHoles.forEach(h => h.angle = override);
                 }
             }
         } catch (e) {
-            console.warn("Hole detection blocked (CORS). Use a local server.");
+            console.warn("Hole detection blocked (CORS).");
             currentHoles=[];
         }
         renderStrip();
     };
-    frameImg.onerror=()=>console.error("Failed to load frame image at: "+src);
 }
 
 function loadFrames(){
-
-const framesList=[
-"assets/frames/frame1.png",
-"assets/frames/frame2.png",
-"assets/frames/frame3.png"
-];
-
-const container=document.getElementById("frames");
-
-framesList.forEach(src=>{
-
-let img=document.createElement("img");
-
-img.src=src;
-
-img.className="frame-thumb";
-
-img.onclick=()=>selectFrame(src);
-
-container.appendChild(img);
-
-});
-
+    const framesList=["assets/frames/frame1.png","assets/frames/frame2.png","assets/frames/frame3.png"];
+    const container=document.getElementById("frames");
+    framesList.forEach(src=>{
+        let img=document.createElement("img");
+        img.src=src;
+        img.className="frame-thumb";
+        img.onclick=()=>selectFrame(src);
+        container.appendChild(img);
+    });
 }
 
 loadFrames();
+
